@@ -14,7 +14,7 @@ class Day(models.Model):
         ('SAT', "Saturday"),
         ('SUN', "Sunday")
     )
-    day = models.CharField(max_length=3, options=DAY_POSSIBILITIES)
+    day = models.CharField(max_length=3, choices=DAY_POSSIBILITIES)
 ###################################
 ## Helper Model ^
 ###################################
@@ -30,10 +30,9 @@ class Child(models.Model):
     last_name = models.CharField(max_length=30)
     date_of_birth = models.DateField()
     grade = models.IntegerField()
-    activities = models.ManyToManyField(Activity, through="Assignment")
-
-class Enrollment(models.Model):
-    confirmed = models.BooleanField()
+    # below line not necessary, can access which activies a child is enrolled in
+    #   from the child without it
+    # activities = models.ManyToManyField(Activity, through="Enrollment")
 
 class Activity(models.Model):
     title = models.CharField(max_length=50)
@@ -44,8 +43,7 @@ class Activity(models.Model):
     youngest_enrolled = models.IntegerField()
     oldest_enrolled = models.IntegerField()
     max_enrollment = models.IntegerField()
-    enrolled_students = models.ManyToManyField(Child, through="Assignment")
-    instructor = models.CharField()
+    enrolled_students = models.ManyToManyField(Child, through="Enrollment")
 
 
     ##################
@@ -57,3 +55,8 @@ class Activity(models.Model):
     #this is honestly a bit hacky and I don't like it, but it's the simplest solution
     # for now
     ##################
+
+class Enrollment(models.Model):
+    child = models.ForeignKey(Child, on_delete=models.CASCADE)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    confirmed = models.BooleanField()
