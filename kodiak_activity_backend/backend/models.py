@@ -20,8 +20,6 @@ class Day(models.Model):
 ###################################
 
 class Parent(models.Model):
-    # email = models.CharField(primary_key=True, max_length=50,
-    #         validators=[validate_email])
     email = models.EmailField(primary_key=True)
 
 class Child(models.Model):
