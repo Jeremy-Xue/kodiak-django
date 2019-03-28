@@ -39,9 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'backend',
     'rest_framework', # enable rest framework
+    'corsheaders' #to enable cross origin resource sharing (for testing locally on two different ports)
 ]
+    #added for cors
 
 MIDDLEWARE = [
+    #added for cors
+    'corsheaders.middleware.CorsMiddleware',
+    # 'django.middleware.common.BrokenLinkEmailsMiddleware',
+    #added for cors ^
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -49,8 +55,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'app.CorsMiddleware',
 ]
 
+CORS_ORIGIN_ALLOW_ALL = True
 ROOT_URLCONF = 'urls'
 
 TEMPLATES = [
