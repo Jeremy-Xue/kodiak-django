@@ -25,4 +25,6 @@ class EnrollmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Enrollment
         fields = '__all__'
+    child = ChildSerializer(read_only=True)
+    activity = ActivitySerializer(read_only=True)
 
