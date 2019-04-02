@@ -67,7 +67,6 @@ INSTALLED_APPS = [
     'rest_framework', # enable rest framework
     'corsheaders', #to enable cross origin resource sharing (for testing locally on two different ports)
     'backend',
-    'django_extensions'
 ]
     #added for cors
 
