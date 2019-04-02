@@ -17,6 +17,9 @@ class ParentList(generics.ListCreateAPIView):
     queryset = Parent.objects.all()
     serializer_class = ParentSerializer
 
+class ActivityList(generics.ListCreateAPIView):
+    queryset = Activity.objects.all()
+    serializer_class = ActivitySerializer
 class EnrollmentList(generics.ListCreateAPIView):
     queryset = Enrollment.objects.all()
     # print(queryset)

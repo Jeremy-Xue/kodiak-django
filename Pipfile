@@ -10,6 +10,8 @@ django = "*"
 djangorestframework = "*"
 factory-boy = "*"
 django-cors-headers = "*"
+django-extensions = "*"
+pygraphviz = "*"
 
 [requires]
 python_version = "3.7"
