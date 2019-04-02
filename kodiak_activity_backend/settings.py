@@ -16,6 +16,8 @@ import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
@@ -23,23 +25,36 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = 's!@8im0#2hl_-uay^6q^&16rawktc5an^=w#=(h!(11m6blryf'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['cfehome.herokuapp.com']
 
 ##########################################################
 #heroku addition, to deal with collect static stuff
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
-# Extra places for collectstatic to find static files.
+
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, "static"),
 )
+
+STATIC_ROOT = os.path.join(BASE_DIR, "live-static-files", "static-root")
+
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+#STATIC_ROOT = "/home/cfedeploy/webapps/cfehome_static_root/"
+
+MEDIA_URL = "/media/"
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "live-static-files", "media-root")
 ##########################################################
 
+# Heroku: Update database configuration from $DATABASE_URL.
+import dj_database_url
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
 # Application definition
 
 INSTALLED_APPS = [
@@ -58,6 +73,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     #added for cors
+    'whitenoise.middleware.WhiteNoiseMiddleware', #new for deployment
     'corsheaders.middleware.CorsMiddleware', # new
     'django.middleware.common.CommonMiddleware', # new
     # 'django.middleware.common.BrokenLinkEmailsMiddleware',
