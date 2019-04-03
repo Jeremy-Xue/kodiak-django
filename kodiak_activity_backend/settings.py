@@ -58,6 +58,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "live-static-files", "media-root")
 # Application definition
 
 INSTALLED_APPS = [
+    'kodiak_activity_backend.backend',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -66,7 +67,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework', # enable rest framework
     'corsheaders', #to enable cross origin resource sharing (for testing locally on two different ports)
-    'kodiak_activity_backend.backend',
 ]
     #added for cors
 
