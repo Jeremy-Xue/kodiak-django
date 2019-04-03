@@ -58,8 +58,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "live-static-files", "media-root")
 # Application definition
 
 INSTALLED_APPS = [
-    'kodiak_activity_backend.backend',
     'kodiak_activity_backend.backend.models',
+    'kodiak_activity_backend.backend',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
