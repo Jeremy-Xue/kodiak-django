@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 's!@8im0#2hl_-uay^6q^&16rawktc5an^=w#=(h!(11m6blryf'
 import os
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 's!@8im0#2hl_-uay^6q^&16rawktc5an^=w#=(h!(11m6blryf')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # to set this to true, you can use `export DJANGO_DEBUG=False` from cmd line
