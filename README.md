@@ -15,3 +15,12 @@ For us, since our app name is `backend`, we run
 ```bash
 python manage.py makemigrations backend
 ```
+## Heroku Deployment
+URL: `banana-tart-91724.herokuapp.com'
+In order to make changes to heroku deployment, commit and push your changes to 
+whichever branch you're working on, then run 
+```bash
+git push heroku master
+```
+
+Then you should be chillin.
