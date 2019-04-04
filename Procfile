@@ -1,1 +1,1 @@
-web: gunicorn kodiak_activity_backend.backend.wsgi --log-file -
+web: gunicorn kodiak_activity_backend.wsgi --log-file -
