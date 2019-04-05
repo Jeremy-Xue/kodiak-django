@@ -31,7 +31,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 's!@8im0#2hl_-uay^6q^&16rawktc5
 #DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 DEBUG = False
 
-ALLOWED_HOSTS = ['banana-tart-91724.herokuapp.com']#, 'cfehome.herokuapp.com']
+ALLOWED_HOSTS = ['banana-tart-91724.herokuapp.com', '127.0.0.1']#, 'cfehome.herokuapp.com']
 
 ##########################################################
 #heroku addition, to deal with collect static stuff
