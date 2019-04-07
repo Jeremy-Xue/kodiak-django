@@ -159,6 +159,30 @@ USE_L10N = True
 
 USE_TZ = True
 
+# EMAIL SETTINGS
+# gmail settings
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'youremail@gmail.com' 
+EMAIL_HOST_PASSWORD = 'yourpassword'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+
+#sendgrid settings
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'yourusername@youremail.com'
+EMAIL_HOST_PASSWORD = 'your password'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+
+DEFAULT_FROM_EMAIL = 'KIBSD <kibsd@gmail.com>'
+ADMINS = (
+    ('KIBSD', 'kibsd@gmail.com'),
+)
+
+MANAGERS = ADMINS
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
