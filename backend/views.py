@@ -7,6 +7,8 @@ from rest_framework import generics, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import datetime
+from django.conf import settings
+from django.core.mail import send_mail
 
 # class BackendListCreate(generics.ListCreateAPIView):
 #     queryset = Child.objects.all()
@@ -40,11 +42,26 @@ def create_enrollment(request):
             activity_id = request.data["activity"]
             activity_name = Activity.objects.get(pk=activity_id).title
             e = serializer.save()
-            #send_email(enrollment_id, parent_email, child_name, activity_name)
+            send_email(enrollment_id=e.id, parent_email=parent_email, child_name=child.first_name, activity_name=activity_name)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+def send_email(enrollment_id=0, parent_email="", child_name="", activity_name=""):
+    confirm_route = "http://injuredroman.github.io/kodiak_sign_up/#/confirm_enrollment/%d"%(enrollment_id)
+    cancel_route = "http://injuredroman.github.io/kodiak_sign_up/#/cancel_enrollment/%d"%(enrollment_id)
+    subject = "Confirm %s's enrollment in %s"%(child_name, activity_name)
+    from_email = settings.DEFAULT_FROM_EMAIL
+    message = ''
+    recipient_list = ['mytest@gmail.com', 'you@email.com']
+    html_message = """<body>
+          <button class="btn btn-success" onclick=" window.open(confirm_route,'_blank')"> Confirm Enrollment</button>
+          <button class="btn btn-success" onclick=" window.open(cancel_route,'_blank')"> Cancel Enrollmnebnt</button>
+       </body>"""
+    send_mail(subject, message, from_email, recipient_list, fail_silently=False, html_message=html_message)
+
 
 @api_view(["POST"])
 def activity_post(request):
