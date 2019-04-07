@@ -7,6 +7,6 @@ urlpatterns = [
     path('api/parents/', views.ParentList.as_view() ),
     path('api/children/', views.ChildList.as_view() ),
     path('api/activities/', views.ActivityList.as_view() ),
-    path('api/make_activity/', views.activity_post )
+    path('api/make_activity/', views.activity_post ),
     # path('api/sendemail/', views.send_email())
 ]

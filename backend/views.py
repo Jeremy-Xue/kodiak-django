@@ -25,6 +25,13 @@ class ActivityList(generics.ListAPIView):
     serializer_class = ActivitySerializer
 
 @api_view(["POST"])
+def create_enrollment(request):
+    request.data....
+
+    #send_email(enrollment_id, parent_email)
+    #hostname/#/confirm_enrollment/enrollment_id
+    #hostname/#/cancel_enrollment/enrollment_id
+@api_view(["POST"])
 def activity_post(request):
     if request.method == "POST":
         #when creating an activity, need to create the days that correspond
