@@ -26,11 +26,26 @@ class ActivityList(generics.ListAPIView):
 
 @api_view(["POST"])
 def create_enrollment(request):
-    request.data....
+    serializer = EnrollmentSerializer(data=request.data)
+    if serializer.is_valid():
+        child_fname = request.data["child_first_name"]
+        child_lname = request.data["child_last_name"]
+        children_that_match = Child.objects.filter(first_name__contains=child_fname,last_name__contains=child_lname)
+        if (len(children_that_match) == 0):
+            #we didn't find a child with this name, we'd like to find one
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else: #hopefully only one child was found
+            child = children_that_match.first()
+            parent_email = child.parent.email
+            activity_id = request.data["activity"]
+            activity_name = Activity.objects.get(pk=activity_id).title
+            e = serializer.save()
+            #send_email(enrollment_id, parent_email, child_name, activity_name)
 
-    #send_email(enrollment_id, parent_email)
-    #hostname/#/confirm_enrollment/enrollment_id
-    #hostname/#/cancel_enrollment/enrollment_id
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 @api_view(["POST"])
 def activity_post(request):
     if request.method == "POST":
@@ -56,7 +71,7 @@ def activity_post(request):
         else:
             return Response(activitySerializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class EnrollmentList(generics.ListCreateAPIView):
+class EnrollmentList(generics.ListAPIView):
     queryset = Enrollment.objects.all()
     # print(queryset)
     serializer_class = EnrollmentSerializer
