@@ -57,4 +57,4 @@ class Activity(models.Model):
 class Enrollment(models.Model):
     child = models.ForeignKey(Child, on_delete=models.CASCADE)
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
-    confirmed = models.BooleanField()
+    confirmed = models.BooleanField(default=False)

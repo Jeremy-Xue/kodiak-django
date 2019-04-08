@@ -21,6 +21,10 @@ class ActivitySerializer(serializers.ModelSerializer):
         model = Activity
         fields = '__all__'
 
+class EnrollmentSaveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Enrollment
+        fields = '__all__'
 class EnrollmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Enrollment

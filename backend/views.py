@@ -28,25 +28,30 @@ class ActivityList(generics.ListAPIView):
 
 @api_view(["POST"])
 def create_enrollment(request):
-    serializer = EnrollmentSerializer(data=request.data)
-    if serializer.is_valid():
-        child_fname = request.data["child_first_name"]
-        child_lname = request.data["child_last_name"]
-        children_that_match = Child.objects.filter(first_name__contains=child_fname,last_name__contains=child_lname)
-        if (len(children_that_match) == 0):
-            #we didn't find a child with this name, we'd like to find one
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        else: #hopefully only one child was found
-            child = children_that_match.first()
-            parent_email = child.parent.email
-            activity_id = request.data["activity"]
-            activity_name = Activity.objects.get(pk=activity_id).title
-            e = serializer.save()
-            send_email(enrollment_id=e.id, parent_email=parent_email, child_name=child.first_name, activity_name=activity_name)
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    else:
+    enrollment_info = dict()
+    child_fname = request.data["child_first_name"]
+    child_lname = request.data["child_last_name"]
+    children_that_match = Child.objects.filter(first_name__contains=child_fname,last_name__contains=child_lname)
+    if (len(children_that_match) == 0):
+        #we didn't find a child with this name, we'd like to find one
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    else: #hopefully only one child was found
+        child = children_that_match.first()
+        # parent_email = child.parent.email
+        parent_email = request.data['parent_email']
+        print(parent_email)
+        activity_id = request.data["activity"]
+        activity_name = Activity.objects.get(pk=activity_id).title
+        enrollment_info['activity'] = activity_id
+        enrollment_info['child'] = child.id
+        serializer = EnrollmentSaveSerializer(data=enrollment_info)
+        if (serializer.is_valid()):
+            print('here')
+            e = serializer.save()
+            print(send_email(enrollment_id=e.id, parent_email=parent_email, child_name=child.first_name, activity_name=activity_name))
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 def send_email(enrollment_id=0, parent_email="", child_name="", activity_name=""):
@@ -55,12 +60,18 @@ def send_email(enrollment_id=0, parent_email="", child_name="", activity_name=""
     subject = "Confirm %s's enrollment in %s"%(child_name, activity_name)
     from_email = settings.DEFAULT_FROM_EMAIL
     message = ''
-    recipient_list = ['mytest@gmail.com', 'you@email.com']
+    # recipient_list = ['mytest@gmail.com', 'you@email.com']
+    recipient_list=[parent_email]
     html_message = """<body>
-          <button class="btn btn-success" onclick=" window.open(confirm_route,'_blank')"> Confirm Enrollment</button>
-          <button class="btn btn-success" onclick=" window.open(cancel_route,'_blank')"> Cancel Enrollmnebnt</button>
-       </body>"""
-    send_mail(subject, message, from_email, recipient_list, fail_silently=False, html_message=html_message)
+          <button class="btn btn-success" onclick=" window.open({},'_blank')"> Confirm Enrollment</button>
+          <button class="btn btn-success" onclick=" window.open({},'_blank')"> Cancel Enrollment</button>
+       </body>""".format(confirm_route, cancel_route)
+    html_message = """<body>
+          <button class="btn btn-success" "><a href="{}"> Confirm Enrollment</a></button>
+          <button class="btn btn-success" "><a href="{}"> Cancel Enrollment</a></button>
+       </body>""".format(confirm_route, cancel_route)
+    print("got here!")
+    return send_mail(subject, message, from_email, recipient_list, fail_silently=False, html_message=html_message)
 
 
 @api_view(["POST"])

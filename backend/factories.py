@@ -19,8 +19,10 @@ class ChildFactory(factory.django.DjangoModelFactory):
 
     # choose parent from all possible parent objects
     parent = factory.Iterator(models.Parent.objects.all())
-    first_name = factory.Sequence(lambda n: "Child{}".format(n))
-    last_name = factory.Faker('name')
+    first_name = factory.Faker('first_name')
+    last_name = factory.Faker('last_name')
+    # first_name = factory.Sequence(lambda n: "Child{}".format(n))
+    # last_name = factory.Faker('name')
     grade = factory.Iterator([1, 3, 5, 6])
     date_of_birth = factory.LazyAttribute(lambda o: date.today() - timedelta(days=365*(o.grade + YEARS_TO_KINDERGARDEN)))
 
