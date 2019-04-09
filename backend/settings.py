@@ -171,6 +171,7 @@ USE_TZ = True
 #sendgrid settings
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_HOST_USER = 'apikey'
+EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_API_KEY')
 EMAIL_HOST_PASSWORD = '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'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
