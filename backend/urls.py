@@ -8,6 +8,7 @@ urlpatterns = [
     path('api/children/', views.ChildList.as_view() ),
     path('api/activities/', views.ActivityList.as_view() ),
     path('api/make_activity/', views.activity_post ),
+    path('api/rud_enrollment/', views.EnrollmentRUD.as_view() ),
     path('api/create_enrollment/', views.create_enrollment ),
     # path('api/sendemail/', views.send_email())
 ]

@@ -26,6 +26,10 @@ class ActivityList(generics.ListAPIView):
     queryset = Activity.objects.all()
     serializer_class = ActivitySerializer
 
+class EnrollmentRUD(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Activity.objects.all()
+    serializer_class = EnrollmentSaveSerializer
+
 @api_view(["POST"])
 def create_enrollment(request):
     enrollment_info = dict()
