@@ -1,2 +1,2 @@
-kodiak_activity_backend/backend/migrations/*
-kodiak_activity_backend/db.sqlite3
+backend/migrations/*
+backend/db.sqlite3
