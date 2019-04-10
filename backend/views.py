@@ -40,9 +40,18 @@ def confirm_enrollment(request, pk):
     enrollment_we_want.confirmed = True
     enrollment_we_want.save()
     send_confirmation_email(e_id)
-    print("here")
     return Response(EnrollmentSerializer(enrollment_we_want).data, status=status.HTTP_206_PARTIAL_CONTENT)
 
+@api_view(["GET"])
+def cancel_enrollment(request, pk):
+    e_id = pk
+    try:
+        enrollment_we_want = Enrollment.objects.get(pk=e_id)
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    send_cancellation_email(e_id)
+    enrollment_we_want.delete()
+    return Response(EnrollmentSerializer(enrollment_we_want).data, status=status.HTTP_206_PARTIAL_CONTENT)
 @api_view(["POST"])
 def create_enrollment(request):
     enrollment_info = dict()
@@ -68,7 +77,7 @@ def create_enrollment(request):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-def send_confirmation_email(enrollment_id=None,hostname="https://banana-tart-91724.herokuapp.com"):
+def send_confirmation_email(enrollment_id=None):
     enrollment = Enrollment.objects.get(pk=enrollment_id)
     child = Child.objects.get(pk=enrollment.child.pk)
     activity = Activity.objects.get(pk=enrollment.activity.pk)
@@ -82,26 +91,28 @@ def send_confirmation_email(enrollment_id=None,hostname="https://banana-tart-917
         <h1>{}'s enrollment in {} confirmed!</h1>
                     """.format(child.first_name, activity.title)
     return send_mail(subject, message, from_email, recipient_list, fail_silently=False, html_message=html_message)
-def send_cancellation_email(enrollment_id=None,hostname="https://banana-tart-91724.herokuapp.com"):
+
+def send_cancellation_email(enrollment_id=None):
     enrollment = Enrollment.objects.get(pk=enrollment_id)
     child = Child.objects.get(pk=enrollment.child)
     activity = Activity.objects.get(pk=enrollment.activity)
     parent = Parent.objects.get(pk=child.parent)
-    subject = "Enrollment Confirmed!"
+    subject = "Enrollment Cancelled!"
     from_email = settings.DEFAULT_FROM_EMAIL
     message = ''
     # recipient_list = ['mytest@gmail.com', 'you@email.com']
     recipient_list=[parent.email]
     html_message =  """
-        <h1>{}'s enrollment in {} confirmed!</h1>
+        <h1>{}'s enrollment in {} succesfully cancelled!</h1>
                     """.format(child.first_name, activity.title)
     return send_mail(subject, message, from_email, recipient_list, fail_silently=False, html_message=html_message)
 
-def send_email(enrollment_id=0, parent_email="", child="", activity=""):
-    confirm_route = "http://injuredroman.github.io/kodiak_sign_up/#/confirm_enrollment/%d"%(enrollment_id)
-    hostname="http://127.0.0.1:8000/"
+def send_email(enrollment_id=0, parent_email="", child="", activity="",hostname="https://banana-tart-91724.herokuapp.com/"):
+    # confirm_route = "http://injuredroman.github.io/kodiak_sign_up/#/confirm_enrollment/%d"%(enrollment_id)
+    # hostname="http://127.0.0.1:8000/" #for local testing only
     confirm_route = hostname + "api/confirm_enrollment/{}/".format(enrollment_id)
-    cancel_route = "http://injuredroman.github.io/kodiak_sign_up/#/cancel_enrollment/%d"%(enrollment_id)
+    cancel_route = hostname + "api/cancel_enrollment/{}/".format(enrollment_id)
+    # cancel_route = "http://injuredroman.github.io/kodiak_sign_up/#/cancel_enrollment/%d"%(enrollment_id)
     subject = "Confirm %s's enrollment in %s"%(child.first_name, activity.title)
     from_email = settings.DEFAULT_FROM_EMAIL
     message = ''
