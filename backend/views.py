@@ -30,6 +30,19 @@ class EnrollmentRUD(generics.RetrieveUpdateDestroyAPIView):
     queryset = Enrollment.objects.all()
     serializer_class = EnrollmentSerializer
 
+@api_view(["GET"])
+def confirm_enrollment(request, pk):
+    e_id = pk
+    try:
+        enrollment_we_want = Enrollment.objects.get(pk=e_id)
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    enrollment_we_want.confirmed = True
+    enrollment_we_want.save()
+    send_confirmation_email(e_id)
+    print("here")
+    return Response(EnrollmentSerializer(enrollment_we_want).data, status=status.HTTP_206_PARTIAL_CONTENT)
+
 @api_view(["POST"])
 def create_enrollment(request):
     enrollment_info = dict()
@@ -43,23 +56,50 @@ def create_enrollment(request):
         child = children_that_match.first()
         # parent_email = child.parent.email
         parent_email = request.data['parent_email']
-        print(parent_email)
         activity_id = request.data["activity"]
         activity_name = Activity.objects.get(pk=activity_id).title
         enrollment_info['activity'] = activity_id
         enrollment_info['child'] = child.id
         serializer = EnrollmentSaveSerializer(data=enrollment_info)
         if (serializer.is_valid()):
-            print('here')
             e = serializer.save()
-            print(send_email(enrollment_id=e.id, parent_email=parent_email, child_name=child.first_name, activity_name=activity_name))
+            num_emails_sent = send_email(enrollment_id=e.id, parent_email=parent_email, child_name=child.first_name, activity_name=activity_name)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+def send_confirmation_email(enrollment_id=None,hostname="https://banana-tart-91724.herokuapp.com"):
+    enrollment = Enrollment.objects.get(pk=enrollment_id)
+    child = Child.objects.get(pk=enrollment.child.pk)
+    activity = Activity.objects.get(pk=enrollment.activity.pk)
+    parent = Parent.objects.get(pk=child.parent.pk)
+    subject = "Enrollment Confirmed!"
+    from_email = settings.DEFAULT_FROM_EMAIL
+    message = ''
+    # recipient_list = ['mytest@gmail.com', 'you@email.com']
+    recipient_list=[parent.email]
+    html_message =  """
+        <h1>{}'s enrollment in {} confirmed!</h1>
+                    """.format(child.first_name, activity.title)
+    return send_mail(subject, message, from_email, recipient_list, fail_silently=False, html_message=html_message)
+def send_cancellation_email(enrollment_id=None,hostname="https://banana-tart-91724.herokuapp.com"):
+    enrollment = Enrollment.objects.get(pk=enrollment_id)
+    child = Child.objects.get(pk=enrollment.child)
+    activity = Activity.objects.get(pk=enrollment.activity)
+    parent = Parent.objects.get(pk=child.parent)
+    subject = "Enrollment Confirmed!"
+    from_email = settings.DEFAULT_FROM_EMAIL
+    message = ''
+    # recipient_list = ['mytest@gmail.com', 'you@email.com']
+    recipient_list=[parent.email]
+    html_message =  """
+        <h1>{}'s enrollment in {} confirmed!</h1>
+                    """.format(child.first_name, activity.title)
+    return send_mail(subject, message, from_email, recipient_list, fail_silently=False, html_message=html_message)
 def send_email(enrollment_id=0, parent_email="", child_name="", activity_name=""):
+    hostname="http://127.0.0.1:8000/"
     confirm_route = "http://injuredroman.github.io/kodiak_sign_up/#/confirm_enrollment/%d"%(enrollment_id)
+    confirm_route = hostname + "api/confirm_enrollment/{}/".format(enrollment_id)
     cancel_route = "http://injuredroman.github.io/kodiak_sign_up/#/cancel_enrollment/%d"%(enrollment_id)
     subject = "Confirm %s's enrollment in %s"%(child_name, activity_name)
     from_email = settings.DEFAULT_FROM_EMAIL
@@ -74,7 +114,6 @@ def send_email(enrollment_id=0, parent_email="", child_name="", activity_name=""
           <button class="btn btn-success" "><a href="{}"> Confirm Enrollment</a></button>
           <button class="btn btn-success" "><a href="{}"> Cancel Enrollment</a></button>
        </body>""".format(confirm_route, cancel_route)
-    print("got here!")
     return send_mail(subject, message, from_email, recipient_list, fail_silently=False, html_message=html_message)
 
 
