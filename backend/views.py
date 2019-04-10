@@ -52,6 +52,7 @@ def cancel_enrollment(request, pk):
     send_cancellation_email(e_id)
     enrollment_we_want.delete()
     return Response(EnrollmentSerializer(enrollment_we_want).data, status=status.HTTP_206_PARTIAL_CONTENT)
+
 @api_view(["POST"])
 def create_enrollment(request):
     enrollment_info = dict()
@@ -65,7 +66,7 @@ def create_enrollment(request):
         child = children_that_match.first()
         # parent_email = child.parent.email
         parent_email = request.data['parent_email']
-        activity_id = request.data["activity"]
+        activity_id = request.data["activities"][0]
         activity = Activity.objects.get(pk=activity_id)
         enrollment_info['activity'] = activity_id
         enrollment_info['child'] = child.id
