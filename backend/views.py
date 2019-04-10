@@ -57,13 +57,13 @@ def create_enrollment(request):
         # parent_email = child.parent.email
         parent_email = request.data['parent_email']
         activity_id = request.data["activity"]
-        activity_name = Activity.objects.get(pk=activity_id).title
+        activity = Activity.objects.get(pk=activity_id)
         enrollment_info['activity'] = activity_id
         enrollment_info['child'] = child.id
         serializer = EnrollmentSaveSerializer(data=enrollment_info)
         if (serializer.is_valid()):
             e = serializer.save()
-            num_emails_sent = send_email(enrollment_id=e.id, parent_email=parent_email, child_name=child.first_name, activity_name=activity_name)
+            num_emails_sent = send_email(enrollment_id=e.id, parent_email=parent_email, child=child, activity=activity)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -96,24 +96,20 @@ def send_cancellation_email(enrollment_id=None,hostname="https://banana-tart-917
         <h1>{}'s enrollment in {} confirmed!</h1>
                     """.format(child.first_name, activity.title)
     return send_mail(subject, message, from_email, recipient_list, fail_silently=False, html_message=html_message)
-def send_email(enrollment_id=0, parent_email="", child_name="", activity_name=""):
-    hostname="http://127.0.0.1:8000/"
+
+def send_email(enrollment_id=0, parent_email="", child="", activity=""):
     confirm_route = "http://injuredroman.github.io/kodiak_sign_up/#/confirm_enrollment/%d"%(enrollment_id)
+    hostname="http://127.0.0.1:8000/"
     confirm_route = hostname + "api/confirm_enrollment/{}/".format(enrollment_id)
     cancel_route = "http://injuredroman.github.io/kodiak_sign_up/#/cancel_enrollment/%d"%(enrollment_id)
-    subject = "Confirm %s's enrollment in %s"%(child_name, activity_name)
+    subject = "Confirm %s's enrollment in %s"%(child.first_name, activity.title)
     from_email = settings.DEFAULT_FROM_EMAIL
     message = ''
-    # recipient_list = ['mytest@gmail.com', 'you@email.com']
     recipient_list=[parent_email]
-    html_message = """<body>
-          <button class="btn btn-success" onclick=" window.open({},'_blank')"> Confirm Enrollment</button>
-          <button class="btn btn-success" onclick=" window.open({},'_blank')"> Cancel Enrollment</button>
-       </body>""".format(confirm_route, cancel_route)
-    html_message = """<body>
+    html_message = """<body> Please confirm or cancel {}'s enrollment in {}, from {} to {}, between {} and {}.\n
           <button class="btn btn-success" "><a href="{}"> Confirm Enrollment</a></button>
           <button class="btn btn-success" "><a href="{}"> Cancel Enrollment</a></button>
-       </body>""".format(confirm_route, cancel_route)
+       </body>""".format(child.first_name, activity.title, activity.start_date, activity.end_date, activity.start_time, activity.end_time, confirm_route, cancel_route)
     return send_mail(subject, message, from_email, recipient_list, fail_silently=False, html_message=html_message)
 
 
