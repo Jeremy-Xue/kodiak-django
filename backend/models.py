@@ -42,6 +42,7 @@ class Activity(models.Model):
     oldest_enrolled = models.IntegerField()
     max_enrollment = models.IntegerField()
     enrolled_students = models.ManyToManyField(Child, through="Enrollment")
+    group_code = models.CharField(max_length=10)
 
 
     ##################
@@ -58,3 +59,7 @@ class Enrollment(models.Model):
     child = models.ForeignKey(Child, on_delete=models.CASCADE)
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     confirmed = models.BooleanField(default=False)
+
+class ParentToken(models.Model):
+    token = models.CharField(max_length=100)
+    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
