@@ -32,8 +32,9 @@ class EnrollmentRUD(generics.RetrieveUpdateDestroyAPIView):
 
 @api_view(["POST"])
 def login(request):
-    login_info = dict()
-    return Response(request.data, status=status.HTTP_201_CREATED)
+    login_info = request.data
+    login_info["status"]="authorized"
+    return Response(login_info, status=status.HTTP_201_CREATED)
 
 @api_view(["GET"])
 def confirm_enrollment(request, pk):
