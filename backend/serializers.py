@@ -20,6 +20,10 @@ class ActivitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Activity
         fields = '__all__'
+class ParentTokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ParentToken
+        fields = '__all__'
 
 class EnrollmentSaveSerializer(serializers.ModelSerializer):
     class Meta:
