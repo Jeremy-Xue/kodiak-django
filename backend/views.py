@@ -31,6 +31,12 @@ class EnrollmentRUD(generics.RetrieveUpdateDestroyAPIView):
     queryset = Enrollment.objects.all()
     serializer_class = EnrollmentSerializer
 
+@api_view(["POST"])
+def login(request):
+    login_info = request.data
+    login_info["status"]="authorized"
+    return Response(login_info, status=status.HTTP_201_CREATED)
+
 @api_view(["GET"])
 def confirm_enrollment(request, pk):
     e_id = pk

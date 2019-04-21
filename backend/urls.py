@@ -12,6 +12,10 @@ urlpatterns = [
     path('api/confirm_enrollment/<int:pk>/', views.confirm_enrollment),
     path('api/cancel_enrollment/<int:pk>/', views.cancel_enrollment),
     path('api/create_enrollment/', views.create_enrollment ),
+<<<<<<< HEAD
     path('api/sign_in/', views.sign_in ),
+=======
+    path('api/login/', views.login),
+>>>>>>> 712b8dc4f47e1cd5e1c7712983dcbe31daf32689
     # path('api/sendemail/', views.send_email())
 ]
