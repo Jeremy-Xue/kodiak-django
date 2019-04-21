@@ -2,6 +2,7 @@ from django.shortcuts import render
 
 # Create your views here.
 from backend.models import *
+from django.contrib.auth.models import User
 from backend.serializers import *
 from rest_framework import generics, status
 from rest_framework.decorators import api_view
@@ -77,6 +78,32 @@ def create_enrollment(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["POST"])
+def sign_in(request):
+    signin_info = dict()
+    user_name = request.data["user_username"]
+    user_pw = request.data["user_password"]
+    users_that_match = User.objects.filter(username__contains=username, password__contains=pw)
+
+    if (len(users_that_match) == 0):
+        #we didn't find a admin with this name, we'd like to find one
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    else: #hopefully only one user was found
+        user = users_that_match.first()
+        #user_email = request.data['user_email']
+        user_id = request.data["users"][0]
+        users = User.objects.get(pk=user_id)
+        signin_info['user'] = user_id
+        #signin_info['username'] = user.
+        serializer = UserSaveSerializer(data=signin_info)
+        if (serializer.is_valid()):
+            e = serializer.save()
+            #num_emails_sent = send_email(enrollment_id=e.id, parent_email=parent_email, child=child, activity=activity)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 def send_confirmation_email(enrollment_id=None):
     enrollment = Enrollment.objects.get(pk=enrollment_id)

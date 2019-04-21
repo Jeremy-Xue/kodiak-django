@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from backend.models import *
+from django.contrib.auth.models import User
 
 class DaySerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,3 +33,7 @@ class EnrollmentSerializer(serializers.ModelSerializer):
     child = ChildSerializer(read_only=True)
     activity = ActivitySerializer(read_only=True)
 
+class UserSaveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
