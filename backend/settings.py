@@ -25,7 +25,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 's!@8im0#2hl_-uay^6q^&16rawktc5
 # SECURITY WARNING: don't run with debug turned on in production!
 # to set this to true, you can use `export DJANGO_DEBUG=False` from cmd line
 #DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['banana-tart-91724.herokuapp.com', '127.0.0.1']#, 'cfehome.herokuapp.com']
 
@@ -107,7 +107,7 @@ TEMPLATES = [
     },
 ]
 
-#WSGI_APPLICATION = 'wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 
 
 # Database
