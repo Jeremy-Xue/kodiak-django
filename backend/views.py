@@ -85,31 +85,24 @@ def create_enrollment(request):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(["POST"])
-def sign_in(request):
-    signin_info = dict()
-    user_name = request.data["user_username"]
-    user_pw = request.data["user_password"]
-    users_that_match = User.objects.filter(username__contains=username, password__contains=pw)
+@api_view(["GET"])
+def resend_confirm(request, pk):
+    enrollment_info_ser = dict()
+    e_id = pk
+    enrollment_info = Enrollment.objects.get(pk = e_id)
+    child = Child.objects.get(id = enrollment_info.child_id)
+    activity = Activity.objects.get(id = enrollment_info.activity_id)
+    parent_email = child.parent.email
 
-    if (len(users_that_match) == 0):
-        #we didn't find a admin with this name, we'd like to find one
+    enrollment_info_ser['activity'] = activity.id
+    enrollment_info_ser['child'] = child.id
+
+    serializer = EnrollmentSaveSerializer(data=enrollment_info_ser)
+    if (serializer.is_valid()):
+        num_emails_sent = send_email(enrollment_id=e_id, parent_email=parent_email, child=child, activity=activity)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    else: #hopefully only one user was found
-        user = users_that_match.first()
-        #user_email = request.data['user_email']
-        user_id = request.data["users"][0]
-        users = User.objects.get(pk=user_id)
-        signin_info['user'] = user_id
-        #signin_info['username'] = user.
-        serializer = UserSaveSerializer(data=signin_info)
-        if (serializer.is_valid()):
-            e = serializer.save()
-            #num_emails_sent = send_email(enrollment_id=e.id, parent_email=parent_email, child=child, activity=activity)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 def send_confirmation_email(enrollment_id=None):
     enrollment = Enrollment.objects.get(pk=enrollment_id)
@@ -140,6 +133,7 @@ def send_cancellation_email(enrollment_id=None):
         <h1>{}'s enrollment in {} succesfully cancelled!</h1>
                     """.format(child.first_name, activity.title)
     return send_mail(subject, message, from_email, recipient_list, fail_silently=False, html_message=html_message)
+
 
 def send_email(enrollment_id=0, parent_email="", child="", activity="",hostname="https://banana-tart-91724.herokuapp.com/"):
     # confirm_route = "http://injuredroman.github.io/kodiak_sign_up/#/confirm_enrollment/%d"%(enrollment_id)
