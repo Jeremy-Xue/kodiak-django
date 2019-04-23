@@ -41,7 +41,7 @@ class EnrollmentRUD(generics.RetrieveUpdateDestroyAPIView):
 def generate_token(e_ids):
     parent_token_info = dict()
     # parent_token_info['enrollments'] = e_id
-    h = hash(''.join(e_ids))
+    h = hash(''.join(e_ids.map(lambda x: str(x))))
     parent_token_info["token"] = h #''.join([random.choice(string.ascii_letters) for i in range(64)])
     parent_serializer = ParentTokenSerializer(data=parent_token_info)
     if (parent_serializer.is_valid()):
