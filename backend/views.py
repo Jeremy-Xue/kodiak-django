@@ -41,14 +41,14 @@ class EnrollmentRUD(generics.RetrieveUpdateDestroyAPIView):
 def generate_token(e_ids):
     parent_token_info = dict()
     # parent_token_info['enrollments'] = e_id
-    h = hash(''.join(map(e_ids, (lambda x: str(x)))))
+    h = hash(''.join(map((lambda x: str(x)), e_ids)))
     parent_token_info["token"] = h #''.join([random.choice(string.ascii_letters) for i in range(64)])
     parent_serializer = ParentTokenSerializer(data=parent_token_info)
     if (parent_serializer.is_valid()):
         p = parent_serializer.save()
         for e_id in e_ids:
             e = Enrollment.objects.get(pk=e_id)
-            e.token = p.id
+            e.token = p
             e.save()
     # change this to include the else case
     return parent_token_info
