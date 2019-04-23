@@ -54,6 +54,8 @@ class Activity(models.Model):
     #this is honestly a bit hacky and I don't like it, but it's the simplest solution
     # for now
     ##################
+class ParentToken(models.Model):
+    token = models.CharField(max_length=100)
 
 class Enrollment(models.Model):
     child = models.ForeignKey(Child, on_delete=models.CASCADE)
@@ -61,5 +63,3 @@ class Enrollment(models.Model):
     token = models.ForeignKey(ParentToken, on_delete=models.SET_NULL, null=True)
     confirmed = models.BooleanField(default=False)
 
-class ParentToken(models.Model):
-    token = models.CharField(max_length=100)
