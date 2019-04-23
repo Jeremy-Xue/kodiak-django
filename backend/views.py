@@ -34,13 +34,18 @@ class EnrollmentRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = EnrollmentSerializer
 
 
-def generate_token(e_id):
+def generate_token(e_ids):
     parent_token_info = dict()
-    parent_token_info['enrollment'] = e_id
-    parent_token_info["token"] = ''.join([random.choice(string.ascii_letters) for i in range(64)])
+    # parent_token_info['enrollments'] = e_id
+    h = hash(''.join(e_ids))
+    parent_token_info["token"] = h #''.join([random.choice(string.ascii_letters) for i in range(64)])
     parent_serializer = ParentTokenSerializer(data=parent_token_info)
     if (parent_serializer.is_valid()):
-        parent_serializer.save()
+        p = parent_serializer.save()
+        for e_id in e_ids:
+            e = Enrollment.objects.get(pk=e_id)
+            e.token = p.id
+            e.save()
     # change this to include the else case
     return parent_token_info
 
@@ -81,18 +86,21 @@ def create_enrollment(request):
         child = children_that_match.first()
         # parent_email = child.parent.email
         parent_email = request.data['parent_email']
-        activity_id = request.data["activity"]
-        activity = Activity.objects.get(pk=activity_id)
-        enrollment_info['activity'] = activity_id
-        enrollment_info['child'] = child.id
-        serializer = EnrollmentSaveSerializer(data=enrollment_info)
-        if (serializer.is_valid()):
-            e = serializer.save()
-            token_info = generate_token(e.id)
-            print(send_email(token=token_info['token'], parent_email=parent_email, child=child, activity=activity))
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        e_ids = []; activities = [];
+        for activity_id in request.data["activities"]:
+            activity = Activity.objects.get(pk=activity_id)
+            activities.append(activity)
+            enrollment_info['activity'] = activity_id
+            enrollment_info['child'] = child.id
+            serializer = EnrollmentSaveSerializer(data=enrollment_info)
+            if (serializer.is_valid()):
+                e = serializer.save()
+                e_ids.append(e.id)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        token_info = generate_token(e_ids)
+        send_email(token=token_info['token'], parent_email=parent_email, child=child, activities=activities)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(["GET"])
 def resend_confirm(request, pk):

@@ -58,8 +58,8 @@ class Activity(models.Model):
 class Enrollment(models.Model):
     child = models.ForeignKey(Child, on_delete=models.CASCADE)
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    token = models.ForeignKey(ParentToken, on_delete=models.SET_NULL, null=True)
     confirmed = models.BooleanField(default=False)
 
 class ParentToken(models.Model):
     token = models.CharField(max_length=100)
-    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
