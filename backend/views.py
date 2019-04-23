@@ -16,7 +16,11 @@ import string
 # class BackendListCreate(generics.ListCreateAPIView):
 #     queryset = Child.objects.all()
 #     serializer_class = ChildSerializer
-
+@api_view(["POST"])
+def login(request):
+    login_info = request.data
+    login_info["status"]="authorized"
+    return Response(login_info, status=status.HTTP_201_CREATED)
 class ChildList(generics.ListCreateAPIView):
     queryset = Child.objects.all()
     serializer_class = ChildSerializer
