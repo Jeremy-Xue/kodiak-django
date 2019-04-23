@@ -13,6 +13,6 @@ urlpatterns = [
     path('api/cancel_enrollment/<int:pk>/', views.cancel_enrollment),
     path('api/create_enrollment/', views.create_enrollment ),
     path('api/resend_confirm/<int:pk>/', views.resend_confirm), 
-    path('api/login/', views.login ),
+    path('api/login/', views.login )
     # path('api/sendemail/', views.send_email())
 ]
