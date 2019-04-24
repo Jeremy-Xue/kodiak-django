@@ -42,7 +42,13 @@ def generate_token(e_ids):
     parent_token_info = dict()
     # parent_token_info['enrollments'] = e_id
     h = hash(''.join(map((lambda x: str(x)), e_ids)))
-    parent_token_info["token"] = h #''.join([random.choice(string.ascii_letters) for i in range(64)])
+    real_hash = ""
+    for c in h:
+        if (! c.isalpha()):
+            real_hash += random.choice(string.ascii_uppercase + string.ascii_lowercase)
+        else:
+            real_hash += c
+    parent_token_info["token"] = real_hash #''.join([random.choice(string.ascii_letters) for i in range(64)])
     parent_serializer = ParentTokenSerializer(data=parent_token_info)
     if (parent_serializer.is_valid()):
         p = parent_serializer.save()
