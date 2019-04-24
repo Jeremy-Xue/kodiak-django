@@ -9,6 +9,7 @@ urlpatterns = [
     path('api/activities/', views.ActivityList.as_view() ),
     path('api/make_activity/', views.activity_post ),
     path('api/rud_enrollment/<int:pk>/', views.EnrollmentRUD.as_view() ),
+    path('api/batch_update_enrollments/', views.batch_update_enrollments),
     path('api/confirm_enrollment/<int:pk>/', views.confirm_enrollment),
     path('api/cancel_enrollment/<int:pk>/', views.cancel_enrollment),
     path('api/create_enrollment/', views.create_enrollment ),

@@ -12,7 +12,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 import random
 import string
-
+from django.core import serializers
 # class BackendListCreate(generics.ListCreateAPIView):
 #     queryset = Child.objects.all()
 #     serializer_class = ChildSerializer
@@ -52,6 +52,34 @@ def generate_token(e_ids):
             e.save()
     # change this to include the else case
     return parent_token_info
+
+@api_view(["POST"])
+def batch_update_enrollments(request):
+    e_ids = request["enrollment_ids"]
+    new_enrollment_statuses = request["enrollment_updates"]
+    response = dict(); response
+    for i in range(len(e_ids)):
+        e_id = e_ids[i]; new_status = new_enrollment_statuses[i];
+        enrollment = Enrollment.objects.get(pk=e_id)
+        if (new_status == 'confirmed'):
+            enrollment.confirmed=True
+            enrollment.save()
+            send_confirmation_email(e_id)
+        elif (new_status == 'canceled'):
+            send_cancellation_email(e_id)
+            enrollment.delete()
+    
+    return Response(dict(), status.HTTP_200_OK)
+
+@api_view(["GET"])
+def enrollments_by_token(request, token):
+    token_obj = ParentToken.objects.get(token=token)
+    enrollments = Enrollment.objects.filter(token=token_obj)
+    e_serialized = list(map(lambda x: EnrollmentSerializer(x).data, enrollments))
+    # e_serialized = serializers.serialize('json', enrollments)
+    response = dict()
+    response["enrollments"] = e_serialized
+    return Response(response,  status.HTTP_200_OK)
 
 @api_view(["GET"])
 def confirm_enrollment(request, pk):
