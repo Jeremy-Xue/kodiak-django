@@ -41,7 +41,7 @@ class EnrollmentRUD(generics.RetrieveUpdateDestroyAPIView):
 def generate_token(e_ids):
     parent_token_info = dict()
     # parent_token_info['enrollments'] = e_id
-    h = hash(''.join(map((lambda x: str(x)), e_ids)))
+    h = str(hash(''.join(map((lambda x: str(x)), e_ids))))
     real_hash = ""
     for c in h:
         if (not c.isalpha()):
