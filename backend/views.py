@@ -44,7 +44,7 @@ def generate_token(e_ids):
     h = hash(''.join(map((lambda x: str(x)), e_ids)))
     real_hash = ""
     for c in h:
-        if (! c.isalpha()):
+        if (not c.isalpha()):
             real_hash += random.choice(string.ascii_uppercase + string.ascii_lowercase)
         else:
             real_hash += c
