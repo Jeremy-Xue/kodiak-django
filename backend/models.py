@@ -58,6 +58,8 @@ class ParentToken(models.Model):
     token = models.CharField(max_length=100)
 
 class Enrollment(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     child = models.ForeignKey(Child, on_delete=models.CASCADE)
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     token = models.ForeignKey(ParentToken, on_delete=models.SET_NULL, null=True)
