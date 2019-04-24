@@ -290,7 +290,7 @@ def send_email(token="", parent_email="", child="", activities=""):
                             <tr>
                                 <td align="center">
                                     <p>
-                                        <a href= {}" class="button">Take me to my Enrollments!</a>
+                                        <a href="{}" class="button">Take me to my Enrollments!</a>
                                     </p>
                                 </td>
                             </tr>
