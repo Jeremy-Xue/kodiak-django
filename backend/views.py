@@ -337,7 +337,7 @@ def activity_post(request):
             #to its running
         result_days_of_occurrence = []
         for day in request.data["days_of_occurrence"]:
-            daySerializer=DaySerializer(data={{"day": day}})
+            daySerializer=DaySerializer(data={"day": day})
             if (daySerializer.is_valid()):
                 d = daySerializer.save()
                 result_days_of_occurrence.append(d.id)
