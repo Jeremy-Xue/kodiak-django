@@ -16,6 +16,10 @@ from django.core import serializers
 # class BackendListCreate(generics.ListCreateAPIView):
 #     queryset = Child.objects.all()
 #     serializer_class = ChildSerializer
+class ActivityDetailsView(generics.RetrieveAPIView):
+    queryset = Activity.objects.all()
+    serializer_class = ActivityDetailSerializer
+
 @api_view(["POST"])
 def login(request):
     login_info = request.data
@@ -358,7 +362,7 @@ def activity_post(request):
 class EnrollmentList(generics.ListAPIView):
     queryset = Enrollment.objects.all()
     # print(queryset)
-    serializer_class = EnrollmentSerializer
+    serializer_class = EnrollmentSaveSerializer
 
 # class ChildList(generics.ListCreateAPIView):
 #     queryset = Enrollment.objects.all()

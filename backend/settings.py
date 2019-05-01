@@ -177,6 +177,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 DEFAULT_FROM_EMAIL = 'KIBSD <jeremyxue@gmail.com>'
 ADMINS = (
     ('KIBSD', 'jeremyxue@gmail.com'),
+    ('RomanRocks', 'roman.a.kaufman@gmail.com')
 )
 
 MANAGERS = ADMINS
