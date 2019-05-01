@@ -362,7 +362,7 @@ def activity_post(request):
 class EnrollmentList(generics.ListAPIView):
     queryset = Enrollment.objects.all()
     # print(queryset)
-    serializer_class = EnrollmentSaveSerializer
+    serializer_class = EnrollmentSerializer
 
 # class ChildList(generics.ListCreateAPIView):
 #     queryset = Enrollment.objects.all()
