@@ -15,6 +15,7 @@ urlpatterns = [
     path('api/cancel_enrollment/<int:pk>/', views.cancel_enrollment),
     path('api/create_enrollment/', views.create_enrollment ),
     path('api/resend_confirm/<int:pk>/', views.resend_confirm), 
+    path('api/send_weekly_update/', views.send_all_emails),
     path('api/enrollments_by_token/<str:token>/', views.enrollments_by_token), 
     path('api/login/', views.login ),
     # path('api/sendemail/', views.send_email())

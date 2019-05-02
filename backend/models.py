@@ -20,7 +20,8 @@ class Day(models.Model):
 ###################################
 
 class Parent(models.Model):
-    email = models.EmailField(primary_key=True)
+    email = models.EmailField()
+    # email = models.EmailField(primary_key=True)
 
 class Child(models.Model):
     parent = models.ForeignKey(Parent, on_delete=models.CASCADE)

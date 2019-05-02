@@ -52,7 +52,7 @@ class EnrollmentFactory(factory.django.DjangoModelFactory):
 def makeitall():
     for _ in range(10):
         ParentFactory.create()
-    for _ in range(10):
+    for _ in range(30):
         ChildFactory.create()
     for _ in range(5):
         ActivityFactory.create()
