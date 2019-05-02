@@ -305,14 +305,17 @@ def send_email_weekly_update(parent_email=""):
                 <tr>
                     <td align="center" class="masthead">
 
-                        <h1>Confirm your child's enrollment</h1>
+                        <h1>KIBSD Sessions Weekly Digest</h1>
 
                     </td>
                 </tr>
                 <tr>
                     <td class="content">
 
-                        <h2>Hi Parent, here are your children's activities for this upcoming week: </h2>""" + children_portion + """
+                        <h2>Hi Parent, here are your children's activities for this upcoming week: </h2> 
+                        <p>
+                        """ + children_portion + """
+                        </p>
 
                         <table>
                             <tr>
