@@ -200,6 +200,8 @@ def send_all_emails(request):
     # parent_email = "roman.a.kaufman@gmail.com"
     for parent in Parent.objects.all():
         parent_email = parent.email
+        if ("example" in parent_email):
+            continue
         send_email_weekly_update(parent_email)
     return Response(dict(), status=status.HTTP_200_OK)
 
