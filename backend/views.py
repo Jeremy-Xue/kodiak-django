@@ -225,7 +225,9 @@ def send_email_weekly_update(parent_email=""):
         relevant_activities = list(filter(relevance_function, activities))
         if (len(relevant_activities)) > 0:
             child_portion += "<p> {}'s enrollments this week:".format(child.first_name)
-            child_portion += "".join("<p>" + str(activity.title) + "</p>" for activity in activities)
+            child_portion += "<ul>"
+            child_portion += "".join("<li>" + str(activity.title) + "</li>" for activity in activities)
+            child_portion += "</ul>"
         else:
             child_portion += "<p> {} doesn't have any sessions scheduled for this week!".format(child.first_name)
         child_portion += "</p>"
@@ -313,9 +315,7 @@ def send_email_weekly_update(parent_email=""):
                     <td class="content">
 
                         <h2>Hi Parent, here are your children's activities for this upcoming week: </h2> 
-                        <p>
                         """ + children_portion + """
-                        </p>
 
                         <table>
                             <tr>
