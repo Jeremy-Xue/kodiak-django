@@ -226,7 +226,7 @@ def send_email_weekly_update(parent_email=""):
         if (len(relevant_activities)) > 0:
             child_portion += "<p> {}'s enrollments this week:".format(child.first_name)
             child_portion += "<ul>"
-            child_portion += "".join("<li>" + str(activity.title) + "</li>" for activity in activities)
+            child_portion += "".join("<li>" + str(activity.title) + "</li>" for activity in relevant_activities)
             child_portion += "</ul>"
         else:
             child_portion += "<p> {} doesn't have any sessions scheduled for this week!".format(child.first_name)
