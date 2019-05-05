@@ -7,17 +7,62 @@ from backend.serializers import *
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
+#JWT Authentication token stuff
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework_jwt.settings import api_settings
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.contrib.auth import authenticate, login
 import datetime
+#email stuff
 from django.conf import settings
 from django.core.mail import send_mail
 import random
 import string
 from django.core import serializers
+
+jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+
+
+from rest_auth.views import LoginView
+
+
+class LoginView(generics.CreateAPIView):
 # class BackendListCreate(generics.ListCreateAPIView):
 #     queryset = Child.objects.all()
 #     serializer_class = ChildSerializer
+    queryset=User.objects.all()
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        username=request.data.get("username", "")
+        password=request.data.get("password", "")
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            userSerialized = UserSerializer(user)
+            # userSerialized.is_valid()
+            print(userSerialized.data)
+            # login saves the user’s ID in the session,
+            # using Django’s session framework.
+            login(request, user)
+            serializer = AuthSerializer(data={
+                # using drf jwt utility functions to generate a token
+                "token": jwt_encode_handler(
+                    jwt_payload_handler(user)
+                ),
+                "status": "authorized",
+                "user": userSerialized.data,
+            })
+            serializer.is_valid()
+            print(serializer.data)
+            return Response(serializer.data)
+        else:
+            serializer = AuthSerializer(data={
+                # using drf jwt utility functions to generate a token
+                "token": "",
+                "status": "unauthorized"
+            })
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 DEPLOYED_HOST = "https://kibsd-sessions.firebaseapp.com/"
 class ActivityDetailsView(generics.RetrieveAPIView):
@@ -26,13 +71,6 @@ class ActivityDetailsView(generics.RetrieveAPIView):
     authentication_classes=(JSONWebTokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
-@api_view(["POST"])
-@authentication_classes((JSONWebTokenAuthentication,))
-@permission_classes((IsAuthenticated,))
-def login(request):
-    login_info = request.data
-    login_info["status"]="authorized"
-    return Response(login_info, status=status.HTTP_201_CREATED)
 class ChildList(generics.ListCreateAPIView):
     authentication_classes=(JSONWebTokenAuthentication,)
     permission_classes = (IsAuthenticated,)

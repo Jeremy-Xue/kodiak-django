@@ -19,7 +19,7 @@ urlpatterns = [
     path('api/resend_confirm/<int:pk>/', views.resend_confirm), 
     path('api/send_weekly_update/', views.send_all_emails),
     path('api/enrollments_by_token/<str:token>/', views.enrollments_by_token), 
-    # path('api/login/', views.login ),
+    path('api/login/', views.LoginView.as_view()),
     url(r'^rest-auth/', include('rest_auth.urls')), #rest-auth/login/, rest-auth/logout/
     url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
     url(r'^refresh-token/', refresh_jwt_token)
