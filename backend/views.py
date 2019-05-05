@@ -5,8 +5,10 @@ from backend.models import *
 from django.contrib.auth.models import User
 from backend.serializers import *
 from rest_framework import generics, status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 import datetime
 from django.conf import settings
 from django.core.mail import send_mail
@@ -21,25 +23,37 @@ DEPLOYED_HOST = "https://kibsd-sessions.firebaseapp.com/"
 class ActivityDetailsView(generics.RetrieveAPIView):
     queryset = Activity.objects.all()
     serializer_class = ActivityDetailSerializer
+    authentication_classes=(JSONWebTokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
 @api_view(["POST"])
+@authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def login(request):
     login_info = request.data
     login_info["status"]="authorized"
     return Response(login_info, status=status.HTTP_201_CREATED)
 class ChildList(generics.ListCreateAPIView):
+    authentication_classes=(JSONWebTokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
     queryset = Child.objects.all()
     serializer_class = ChildSerializer
 
 class ParentList(generics.ListCreateAPIView):
+    authentication_classes=(JSONWebTokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
     queryset = Parent.objects.all()
     serializer_class = ParentSerializer
 
 class ActivityList(generics.ListAPIView):
+    authentication_classes=(JSONWebTokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
     queryset = Activity.objects.all()
     serializer_class = ActivitySerializer
 
 class EnrollmentRUD(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes=(JSONWebTokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
     queryset = Enrollment.objects.all()
     serializer_class = EnrollmentSerializer
 
@@ -66,6 +80,8 @@ def generate_token(e_ids):
     return parent_token_info
 
 @api_view(["POST"])
+@authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def batch_update_enrollments(request):
     e_ids = request["enrollment_ids"]
     new_enrollment_statuses = request["enrollment_updates"]
@@ -84,6 +100,8 @@ def batch_update_enrollments(request):
     return Response(dict(), status.HTTP_200_OK)
 
 @api_view(["GET"])
+@authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def enrollments_by_token(request, token):
     token_obj = ParentToken.objects.get(token=token)
     enrollments = Enrollment.objects.filter(token=token_obj)
@@ -94,6 +112,8 @@ def enrollments_by_token(request, token):
     return Response(response,  status.HTTP_200_OK)
 
 @api_view(["GET"])
+@authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def confirm_enrollment(request, pk):
     e_id = pk
     try:
@@ -106,6 +126,8 @@ def confirm_enrollment(request, pk):
     return Response(EnrollmentSerializer(enrollment_we_want).data, status=status.HTTP_206_PARTIAL_CONTENT)
 
 @api_view(["GET"])
+@authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def cancel_enrollment(request, pk):
     e_id = pk
     try:
@@ -118,6 +140,8 @@ def cancel_enrollment(request, pk):
 
 
 @api_view(["POST"])
+@authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def create_enrollment(request):
     enrollment_info = dict()
     child_fname = request.data["child_first_name"]
@@ -147,6 +171,8 @@ def create_enrollment(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(["GET"])
+@authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def resend_confirm(request, pk):
     enrollment_info_ser = dict()
     e_id = pk
@@ -196,6 +222,8 @@ def send_cancellation_email(enrollment_id=None):
     return send_mail(subject, message, from_email, recipient_list, fail_silently=False, html_message=html_message)
 
 @api_view(["GET"])
+@authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def send_all_emails(request):
     # parent_email = "roman.a.kaufman@gmail.com"
     for parent in Parent.objects.all():
@@ -497,6 +525,8 @@ def send_email_single(token="", parent_email="", child="", activities=""):
 # 
 
 @api_view(["POST"])
+@authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def activity_post(request):
     if request.method == "POST":
         #when creating an activity, need to create the days that correspond
@@ -522,6 +552,8 @@ def activity_post(request):
             return Response(activitySerializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class EnrollmentList(generics.ListAPIView):
+    authentication_classes=(JSONWebTokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
     queryset = Enrollment.objects.all()
     # print(queryset)
     serializer_class = EnrollmentSerializer

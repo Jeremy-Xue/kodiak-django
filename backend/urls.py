@@ -1,5 +1,7 @@
-from django.urls import path
+from django.urls import path, include
+from django.conf.urls import url
 from . import views
+from rest_framework_jwt.views import refresh_jwt_token
 
 urlpatterns = [
     # path('api/backend/', views.BackendListCreate.as_view() ),
@@ -17,6 +19,9 @@ urlpatterns = [
     path('api/resend_confirm/<int:pk>/', views.resend_confirm), 
     path('api/send_weekly_update/', views.send_all_emails),
     path('api/enrollments_by_token/<str:token>/', views.enrollments_by_token), 
-    path('api/login/', views.login ),
+    # path('api/login/', views.login ),
+    url(r'^rest-auth/', include('rest_auth.urls')), #rest-auth/login/, rest-auth/logout/
+    url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
+    url(r'^refresh-token/', refresh_jwt_token)
     # path('api/sendemail/', views.send_email())
 ]

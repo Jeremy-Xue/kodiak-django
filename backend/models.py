@@ -34,7 +34,7 @@ class Child(models.Model):
     # activities = models.ManyToManyField(Activity, through="Enrollment")
 
 class Activity(models.Model):
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=100)
     start_date = models.DateField()
     end_date = models.DateField()
     start_time = models.TimeField()
