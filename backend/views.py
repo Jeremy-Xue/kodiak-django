@@ -64,6 +64,28 @@ class LoginView(generics.CreateAPIView):
             })
             serializer.is_valid()
             return Response(serializer.data, status=status.HTTP_401_UNAUTHORIZED)
+class RegisterUsers(generics.CreateAPIView):
+    """
+    POST auth/register/
+    """
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        username = request.data.get("email", "") # only going to have email and password
+        password = request.data.get("password", "")
+        email = request.data.get("email", "")
+        if not username and not password and not email:
+            return Response(
+                data={
+                    "message": "username, password and email is required to register a user"
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        new_user = User.objects.create_user(
+            username=username, password=password, email=email
+        )
+        return Response(status=status.HTTP_201_CREATED)
 
 DEPLOYED_HOST = "https://kibsd-sessions.firebaseapp.com/"
 class ActivityDetailsView(generics.RetrieveAPIView):
