@@ -62,7 +62,8 @@ class LoginView(generics.CreateAPIView):
                 "token": "",
                 "status": "unauthorized"
             })
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+            serializer.is_valid()
+            return Response(serializer.data, status=status.HTTP_401_UNAUTHORIZED)
 
 DEPLOYED_HOST = "https://kibsd-sessions.firebaseapp.com/"
 class ActivityDetailsView(generics.RetrieveAPIView):
