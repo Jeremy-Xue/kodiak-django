@@ -202,14 +202,21 @@ def cancel_enrollment(request, pk):
 
 
 @api_view(["POST"])
-@authentication_classes((JSONWebTokenAuthentication,))
-@permission_classes((IsAuthenticated,))
+# @authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((AllowAny,))
 def create_enrollment(request):
     enrollment_info = dict()
     child_fname = request.data["child_first_name"]
     child_lname = request.data["child_last_name"]
     parent_email = request.data['parent_email']
-    children_that_match = Child.objects.filter(first_name__contains=child_fname,last_name__contains=child_lname)
+    try:
+        parent_that_corresponds = Parent.objects.get(email=parent_email)
+    except:
+        ### do something crazy here
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    # children_that_match = Child.objects.filter(first_name__contains=child_fname,last_name__contains=child_lname)
+    children_that_match = parent_that_corresponds.child_set.all().filter(first_name__contains=child_fname,last_name__contains=child_lname)
+
     if (len(children_that_match) == 0):
         #we didn't find a child with this name, we'd like to find one
         subject = "[KIBSD] Could not find a child with name {} {}".format(child_fname, child_lname)
@@ -345,12 +352,14 @@ def create_enrollment(request):
 </body>
 </html>""".format("KIBSDformURL.com")
 
-        recipient_list=[request.data['parent_email']]
+        recipient_list=[parent_email]
         send_mail(subject, message, from_email, recipient_list, fail_silently=False, html_message=html_message)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     else: #hopefully only one child was found
         child = children_that_match.first()
         # parent_email = child.parent.email
+        parent_email = child.parent.email
+        # parent_email = request.data['parent_email']
         e_ids = []; activities = [];
         for activity_id in request.data["activities"]:
             activity = Activity.objects.get(pk=activity_id)
