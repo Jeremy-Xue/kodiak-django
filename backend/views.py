@@ -162,8 +162,8 @@ def batch_update_enrollments(request):
     return Response(dict(), status.HTTP_200_OK)
 
 @api_view(["GET"])
-@authentication_classes((JSONWebTokenAuthentication,))
-@permission_classes((IsAuthenticated,))
+# @authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((AllowAny,))
 def enrollments_by_token(request, token):
     token_obj = ParentToken.objects.get(token=token)
     enrollments = Enrollment.objects.filter(token=token_obj)
