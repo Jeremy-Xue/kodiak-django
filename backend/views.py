@@ -88,7 +88,7 @@ class RegisterUsers(generics.CreateAPIView):
         return Response(status=status.HTTP_201_CREATED)
 
 DEPLOYED_HOST = "https://kibsd-sessions.firebaseapp.com/"
-class ActivityDetailsView(generics.RetrieveAPIView):
+class ActivityRUDView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Activity.objects.all()
     serializer_class = ActivityDetailSerializer
     authentication_classes=(JSONWebTokenAuthentication,)
@@ -107,14 +107,15 @@ class ParentList(generics.ListCreateAPIView):
     serializer_class = ParentSerializer
 
 class ActivityList(generics.ListAPIView):
-    authentication_classes=(JSONWebTokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    # authentication_classes=(JSONWebTokenAuthentication,)
+    permission_classes = (AllowAny,)
     queryset = Activity.objects.all()
     serializer_class = ActivitySerializer
 
 class EnrollmentRUD(generics.RetrieveUpdateDestroyAPIView):
-    authentication_classes=(JSONWebTokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    # authentication_classes=(JSONWebTokenAuthentication,)
+    # permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
     queryset = Enrollment.objects.all()
     serializer_class = EnrollmentSerializer
 

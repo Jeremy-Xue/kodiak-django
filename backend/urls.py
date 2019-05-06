@@ -1,7 +1,12 @@
 from django.urls import path, include
 from django.conf.urls import url
 from . import views
+# from rest_framework import routers
 from rest_framework_jwt.views import refresh_jwt_token
+
+# router = routers.DefaultRouter()
+# router.register(r'enrollments', views.UserViewSet)
+# router.register(r'groups', views.GroupViewSet)
 
 urlpatterns = [
     # path('api/backend/', views.BackendListCreate.as_view() ),
@@ -9,7 +14,7 @@ urlpatterns = [
     path('api/parents/', views.ParentList.as_view() ),
     path('api/children/', views.ChildList.as_view() ),
     path('api/activities/', views.ActivityList.as_view() ),
-    path('api/activity/<int:pk>/', views.ActivityDetailsView.as_view() ),
+    path('api/activity/<int:pk>/', views.ActivityRUDView.as_view() ),
     path('api/make_activity/', views.activity_post ),
     path('api/rud_enrollment/<int:pk>/', views.EnrollmentRUD.as_view() ),
     path('api/batch_update_enrollments/', views.batch_update_enrollments),
