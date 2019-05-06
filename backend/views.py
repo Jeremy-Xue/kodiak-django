@@ -202,8 +202,8 @@ def cancel_enrollment(request, pk):
 
 
 @api_view(["POST"])
-@authentication_classes((JSONWebTokenAuthentication,))
-@permission_classes((IsAuthenticated,))
+# @authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((AllowAny,))
 def create_enrollment(request):
     enrollment_info = dict()
     child_fname = request.data["child_first_name"]
