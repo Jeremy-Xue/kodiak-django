@@ -311,19 +311,17 @@ def create_enrollment(request):
 
                         """.format(child_fname) + """</p>
 
-                        <p>However, we were able to find the following children under your name: """ + "".join("<p>" + str(child.first_name) + str(child.last_name) + "</p>" for child in children) + """</p>
+                        <p>However, we were able to find the following children under your name: """ + "".join("<p>" + str(child.first_name) + " " + str(child.last_name) + "</p>" for child in children) + """</p>
 
                         <table>
                             <tr>
                                 <td align="center">
                                     <p>
-                                        <a href="{}" class="button">Try again?</a>
+                                        <a href="{}" class="button">Try enrolling again?</a>
                                     </p>
                                 </td>
                             </tr>
                         </table>
-
-                        <p>This link will expire in 1 day.</p>
 
                         <p><em>– KIBSD</em></p>
 
@@ -350,7 +348,7 @@ def create_enrollment(request):
     </tr>
 </table>
 </body>
-</html>""".format("KIBSDformURL.com")
+</html>""".format(DEPLOYED_HOST + "#/signup")
 
         recipient_list=[parent_email]
         send_mail(subject, message, from_email, recipient_list, fail_silently=False, html_message=html_message)
@@ -467,6 +465,7 @@ def send_email_weekly_update(parent_email=""):
         child_portion += "</p>"
 
         children_portion += child_portion
+    console.log(children_portion)
     html_message = """
         <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
