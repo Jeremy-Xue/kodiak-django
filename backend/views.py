@@ -208,11 +208,15 @@ def create_enrollment(request):
     enrollment_info = dict()
     child_fname = request.data["child_first_name"]
     child_lname = request.data["child_last_name"]
+    parent_email = request.data['parent_email']
     children_that_match = Child.objects.filter(first_name__contains=child_fname,last_name__contains=child_lname)
     if (len(children_that_match) == 0):
         #we didn't find a child with this name, we'd like to find one
         subject = "[KIBSD] Could not find a child with name {} {}".format(child_fname, child_lname)
         from_email = settings.DEFAULT_FROM_EMAIL
+        message = ""
+        parent = Parent.objects.get(email=parent_email);
+        children = list(parent.child_set.all())
         html_message = html_message = """
         <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -298,15 +302,15 @@ def create_enrollment(request):
 
                         <p> We could not find a child named {}, and were not able to process the attempted enrollments.
 
-                        """.format(child_fname) + """
+                        """.format(child_fname) + """</p>
 
-                        </p>
+                        <p>However, we were able to find the following children under your name: """ + "".join("<p>" + str(child.first_name) + str(child.last_name) + "</p>" for child in children) + """</p>
 
                         <table>
                             <tr>
                                 <td align="center">
                                     <p>
-                                        <a href="{}" class="button"></a>
+                                        <a href="{}" class="button">Try again?</a>
                                     </p>
                                 </td>
                             </tr>
@@ -339,7 +343,7 @@ def create_enrollment(request):
     </tr>
 </table>
 </body>
-</html>"""
+</html>""".format("KIBSDformURL.com")
 
         recipient_list=[request.data['parent_email']]
         send_mail(subject, message, from_email, recipient_list, fail_silently=False, html_message=html_message)
@@ -347,7 +351,6 @@ def create_enrollment(request):
     else: #hopefully only one child was found
         child = children_that_match.first()
         # parent_email = child.parent.email
-        parent_email = request.data['parent_email']
         e_ids = []; activities = [];
         for activity_id in request.data["activities"]:
             activity = Activity.objects.get(pk=activity_id)
