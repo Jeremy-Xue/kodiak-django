@@ -5,41 +5,117 @@ from backend.models import *
 from django.contrib.auth.models import User
 from backend.serializers import *
 from rest_framework import generics, status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
+#JWT Authentication token stuff
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework_jwt.settings import api_settings
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.contrib.auth import authenticate, login
 import datetime
+#email stuff
 from django.conf import settings
 from django.core.mail import send_mail
 import random
 import string
 from django.core import serializers
+
+jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+
+
+from rest_auth.views import LoginView
+
+
+class LoginView(generics.CreateAPIView):
 # class BackendListCreate(generics.ListCreateAPIView):
 #     queryset = Child.objects.all()
 #     serializer_class = ChildSerializer
+    queryset=User.objects.all()
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        username=request.data.get("username", "")
+        password=request.data.get("password", "")
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            userSerialized = UserSerializer(user)
+            # userSerialized.is_valid()
+            print(userSerialized.data)
+            # login saves the user’s ID in the session,
+            # using Django’s session framework.
+            login(request, user)
+            serializer = AuthSerializer(data={
+                # using drf jwt utility functions to generate a token
+                "token": jwt_encode_handler(
+                    jwt_payload_handler(user)
+                ),
+                "status": "authorized",
+                "user": userSerialized.data,
+            })
+            serializer.is_valid()
+            print(serializer.data)
+            return Response(serializer.data)
+        else:
+            serializer = AuthSerializer(data={
+                # using drf jwt utility functions to generate a token
+                "token": "",
+                "status": "unauthorized"
+            })
+            serializer.is_valid()
+            return Response(serializer.data, status=status.HTTP_401_UNAUTHORIZED)
+class RegisterUsers(generics.CreateAPIView):
+    """
+    POST auth/register/
+    """
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        username = request.data.get("email", "") # only going to have email and password
+        password = request.data.get("password", "")
+        email = request.data.get("email", "")
+        if not username and not password and not email:
+            return Response(
+                data={
+                    "message": "username, password and email is required to register a user"
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        new_user = User.objects.create_user(
+            username=username, password=password, email=email
+        )
+        return Response(status=status.HTTP_201_CREATED)
 
 DEPLOYED_HOST = "https://kibsd-sessions.firebaseapp.com/"
-class ActivityDetailsView(generics.RetrieveAPIView):
+class ActivityRUDView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Activity.objects.all()
     serializer_class = ActivityDetailSerializer
+    authentication_classes=(JSONWebTokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
-@api_view(["POST"])
-def login(request):
-    login_info = request.data
-    login_info["status"]="authorized"
-    return Response(login_info, status=status.HTTP_201_CREATED)
 class ChildList(generics.ListCreateAPIView):
+    authentication_classes=(JSONWebTokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
     queryset = Child.objects.all()
     serializer_class = ChildSerializer
 
 class ParentList(generics.ListCreateAPIView):
+    authentication_classes=(JSONWebTokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
     queryset = Parent.objects.all()
     serializer_class = ParentSerializer
 
 class ActivityList(generics.ListAPIView):
+    # authentication_classes=(JSONWebTokenAuthentication,)
+    permission_classes = (AllowAny,)
     queryset = Activity.objects.all()
     serializer_class = ActivitySerializer
 
 class EnrollmentRUD(generics.RetrieveUpdateDestroyAPIView):
+    # authentication_classes=(JSONWebTokenAuthentication,)
+    # permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
     queryset = Enrollment.objects.all()
     serializer_class = EnrollmentSerializer
 
@@ -66,6 +142,8 @@ def generate_token(e_ids):
     return parent_token_info
 
 @api_view(["POST"])
+@authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def batch_update_enrollments(request):
     e_ids = request["enrollment_ids"]
     new_enrollment_statuses = request["enrollment_updates"]
@@ -84,6 +162,8 @@ def batch_update_enrollments(request):
     return Response(dict(), status.HTTP_200_OK)
 
 @api_view(["GET"])
+@authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def enrollments_by_token(request, token):
     token_obj = ParentToken.objects.get(token=token)
     enrollments = Enrollment.objects.filter(token=token_obj)
@@ -94,6 +174,8 @@ def enrollments_by_token(request, token):
     return Response(response,  status.HTTP_200_OK)
 
 @api_view(["GET"])
+@authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def confirm_enrollment(request, pk):
     e_id = pk
     try:
@@ -106,6 +188,8 @@ def confirm_enrollment(request, pk):
     return Response(EnrollmentSerializer(enrollment_we_want).data, status=status.HTTP_206_PARTIAL_CONTENT)
 
 @api_view(["GET"])
+@authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def cancel_enrollment(request, pk):
     e_id = pk
     try:
@@ -118,6 +202,8 @@ def cancel_enrollment(request, pk):
 
 
 @api_view(["POST"])
+@authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def create_enrollment(request):
     enrollment_info = dict()
     child_fname = request.data["child_first_name"]
@@ -279,6 +365,8 @@ def create_enrollment(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(["GET"])
+@authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def resend_confirm(request, pk):
     enrollment_info_ser = dict()
     e_id = pk
@@ -328,6 +416,8 @@ def send_cancellation_email(enrollment_id=None):
     return send_mail(subject, message, from_email, recipient_list, fail_silently=False, html_message=html_message)
 
 @api_view(["GET"])
+@authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def send_all_emails(request):
     # parent_email = "roman.a.kaufman@gmail.com"
     for parent in Parent.objects.all():
@@ -629,6 +719,8 @@ def send_email_single(token="", parent_email="", child="", activities=""):
 # 
 
 @api_view(["POST"])
+@authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def activity_post(request):
     if request.method == "POST":
         #when creating an activity, need to create the days that correspond
@@ -654,6 +746,8 @@ def activity_post(request):
             return Response(activitySerializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class EnrollmentList(generics.ListAPIView):
+    authentication_classes=(JSONWebTokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
     queryset = Enrollment.objects.all()
     # print(queryset)
     serializer_class = EnrollmentSerializer

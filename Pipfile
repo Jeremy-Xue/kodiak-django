@@ -13,7 +13,11 @@ django-cors-headers = "*"
 whitenoise = "*"
 gunicorn = "*"
 dj-database-url = "*"
-psycopg2 = "*"
+psycopg2 = {index = "https://testpypi.python.org/pypi",version = "==2.7."}
+django-rest-auth = "*"
+djangorestframework-jwt = "*"
+django-allauth = "*"
+psycopg2-binary = "*"
 
 [requires]
 python_version = "3.7"
