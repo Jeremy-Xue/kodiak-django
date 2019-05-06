@@ -214,8 +214,8 @@ def create_enrollment(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     else: #hopefully only one child was found
         child = children_that_match.first()
-        # parent_email = child.parent.email
-        parent_email = request.data['parent_email']
+        parent_email = child.parent.email
+        # parent_email = request.data['parent_email']
         e_ids = []; activities = [];
         for activity_id in request.data["activities"]:
             activity = Activity.objects.get(pk=activity_id)
