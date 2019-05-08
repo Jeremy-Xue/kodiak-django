@@ -66,3 +66,6 @@ class Enrollment(models.Model):
     token = models.ForeignKey(ParentToken, on_delete=models.SET_NULL, null=True)
     confirmed = models.BooleanField(default=False)
 
+    # class Meta:
+    #     unique_together = ('child', 'activity', )
+
