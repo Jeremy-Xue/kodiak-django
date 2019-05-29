@@ -133,7 +133,7 @@ JWT_AUTH = {
     'rest_framework_jwt.utils.jwt_response_payload_handler',
 }
 
-WSGI_APPLICATION = 'wsgi.application'
+WSGI_APPLICATION = 'backend.wsgi.application'
 
 
 # Database
