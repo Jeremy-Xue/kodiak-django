@@ -40,9 +40,11 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
 
-STATIC_ROOT = os.path.join(BASE_DIR, "live-static-files", "static-root")
+# STATIC_ROOT = os.path.join(BASE_DIR, "live-static-files", "static-root")
 
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 #STATIC_ROOT = "/home/cfedeploy/webapps/cfehome_static_root/"
 
@@ -73,12 +75,12 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     #added for cors
-    'whitenoise.middleware.WhiteNoiseMiddleware', #new for deployment
-    'corsheaders.middleware.CorsMiddleware', # new
-    'django.middleware.common.CommonMiddleware', # new
     # 'django.middleware.common.BrokenLinkEmailsMiddleware',
     #added for cors ^
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', #new for deployment
+    'corsheaders.middleware.CorsMiddleware', # new
+    'django.middleware.common.CommonMiddleware', # new
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
